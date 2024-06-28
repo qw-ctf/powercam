@@ -1,0 +1,12 @@
+../csaddon.dat
+
+// TODO: Dump with /pr_dumpplatform -o csqc -Tcs to skip need for define
+#define CSQC
+#define printf(fmt, ...) print(sprintf(fmt, __VA_ARGS__))
+#pragma target fte
+
+csplat.qc
+itemtype.qc
+cameras.qc
+itemtimer.qc
+main.qc
