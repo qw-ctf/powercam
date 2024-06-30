@@ -269,7 +269,7 @@ void(float vwidth, float vheight, float notmenu) CSQC_UpdateView =
     item_t *item = timer->item;
 
     if (camera_end == CAMERA_END_RESET && timer->took > camera_start) {
-        camera_end = time + camera_outro;
+        camera_end = timer->took + camera_outro;
         camera_end_transition = camera_end - camera_transition;
     }
 
