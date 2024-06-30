@@ -1,0 +1,32 @@
+name: powercam
+
+on: [push]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/cache@v4
+        id: fteqcc-cache
+        with:
+          path: /usr/local/bin/fteqcc64
+          key: ${{ runner.os }}-2024-06-30
+
+      - name: Fetch fteqcc
+        run: |
+          curl -Ofteqcc.zip https://www.fteqcc.org/dl/fteqcc_linux64.zip
+          unzip -d /usr/local/bin fteqcc_linux64.zip fteqcc64
+        if: steps.fteqcc-cache.outputs.cache-hit != 'true'
+
+      - name: Compile PowerCam
+        run: make FTEQCC=fteqcc64
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: powercam
+          path: |
+            csaddon.*
+          compression-level: 9
