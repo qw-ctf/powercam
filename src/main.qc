@@ -32,6 +32,15 @@ var float camera_end_transition = CAMERA_END_RESET;
 var vector camera_bg_color = '1 1 1';
 var string camera_item_name = "none";
 
+void() ResetCamera =
+{
+    camera_start = CAMERA_START_RESET;
+    camera_start_transition = CAMERA_START_RESET;
+    camera_end = CAMERA_END_RESET;
+    camera_end_transition = CAMERA_END_RESET;
+    camera_index = -1;
+};
+
 void() SelectNextCamera =
 {
     if (!match_start_time) {
@@ -335,11 +344,7 @@ void(float vwidth, float vheight, float notmenu) CSQC_UpdateView =
     drawresetcliparea();
 
     if (time > camera_end) {
-        camera_start = CAMERA_START_RESET;
-        camera_start_transition = CAMERA_START_RESET;
-        camera_end = CAMERA_END_RESET;
-        camera_end_transition = CAMERA_END_RESET;
-        camera_index = -1;
+        ResetCamera();
         SelectNextCamera();
     }
 };
