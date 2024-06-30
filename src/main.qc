@@ -328,7 +328,7 @@ void(float vwidth, float vheight, float notmenu) CSQC_UpdateView =
 
     string text;
     if (time < timer->respawn && time > (timer->respawn - camera_intro)) {
-        text = sprintf("%s in %i sec", camera_item_name , (int)(timer->respawn - time));
+        text = sprintf("%s in %i sec", camera_item_name , (int)ceil(timer->respawn - time));
     } else if (time > timer->took && timer->took > camera_start) {
         string name = getplayerkeyvalue(timer->playernum - 1, INFOKEY_P_NAME);
         text = sprintf("%s's %s", name, camera_item_name);
