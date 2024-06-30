@@ -86,6 +86,18 @@ struct {
         quad('192 256 24', camera(origin('271 350 49'), angles('17 229 0'))),
         pent('-640 -256 24', camera(origin('-735 -333 58'), angles('23 39 0')))
     ),
+    map("bravado",
+        quad('752 24 288', camera(origin('820 -9 374'), angles('45 142 0')))
+    ),
+    map("shifter",
+        quad('40 -24 168', camera(origin('81 -138 239'), angles('37 108 0')))
+    ),
+    map("catalyst",
+        quad('836 14 235', camera(origin('748 -85 282'), angles('26 48 0')))
+    ),
+    map("ultrav",
+        quad('608 -768 632', camera(origin('610 -772 716'), angles('90 1 0')))
+    ),
 };
 
 #undef map
