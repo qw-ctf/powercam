@@ -253,6 +253,8 @@ void(float vwidth, float vheight, float notmenu) CSQC_UpdateView =
         return;
     }
 
+    vector font_size = '8 8 0';
+
     float aspect_ratio = vheight / vwidth;
     float width = vwidth / 4.0;
     float height = width * aspect_ratio;
@@ -287,7 +289,7 @@ void(float vwidth, float vheight, float notmenu) CSQC_UpdateView =
     float bg_offset_x = x_offset + slide_offset - margin / 4;
     float bg_offset_y = margin - margin / 4;
     float bg_width = width + margin / 2;
-    float bg_height = height + margin;
+    float bg_height = height + margin / 2 + font_size.y;
     float bg_alpha = 0.5;
     drawfill([bg_offset_x, bg_offset_y], [bg_width, bg_height], camera_bg_color, bg_alpha);
 
@@ -337,10 +339,9 @@ void(float vwidth, float vheight, float notmenu) CSQC_UpdateView =
     float txt_offset_x = x_offset + slide_offset;
     float txt_offset_y = margin + height + margin / 8;
     vector txt_color = [0.7, 0.7, 0.7];
-    vector txt_size = [8, 8];
     float txt_alpha = 1;
-    drawsetcliparea(txt_offset_x, txt_offset_y, width, txt_size[0]);
-    drawstring([txt_offset_x, txt_offset_y], text, txt_size, txt_color, txt_alpha, 0);
+    drawsetcliparea(txt_offset_x, txt_offset_y, width, font_size.y);
+    drawstring([txt_offset_x, txt_offset_y], text, font_size, txt_color, txt_alpha, 0);
     drawresetcliparea();
 
     if (time > camera_end) {
