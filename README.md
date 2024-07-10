@@ -58,6 +58,7 @@ Configuration and commands
 
 Configurations:
 * `pip_enabled` - `0` or `1`.
+* `pip_debug` - `0` or `1` to toggle debug logging.
 * `pip_camera_intro` - Seconds before spawn to show camera.
 * `pip_camera_outro` - Seconds until hide camera after pickup.
 * `pip_camera_transition` - Seconds of camera transition, both in and out.
