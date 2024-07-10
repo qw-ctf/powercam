@@ -20,8 +20,8 @@ var float camera_intro = 4.0;
 var float camera_outro = 2.5;
 var float camera_transition = 1.0;
 
-#define CAMERA_START_RESET 9999
-#define CAMERA_END_RESET   9999
+#define CAMERA_START_RESET 9999999
+#define CAMERA_END_RESET   9999999
 
 var float camera_start = CAMERA_START_RESET;
 var float camera_start_transition = CAMERA_START_RESET;
