@@ -102,50 +102,54 @@ void() SelectNextCamera =
 
 float() PipCmdActive =
 {
-    print("Picture-in-Picture Camera State\n\n");
-    print("Camera settings:\n");
-    print("- index:      ", itos(camera_index), "\n");
-    print("- intro:      ", ftos(camera_intro), "\n");
-    print("- outro:      ", ftos(camera_outro), "\n");
-    print("- transition: ", ftos(camera_transition), "\n\n");
-    print("Camera schedule:\n");
-    print("- start: ", ftos(camera_start), "\n");
-    print("- intro: ", ftos(camera_start_transition), "\n");
-    print("- outro: ", ftos(camera_end_transition), "\n");
-    print("- end:   ", ftos(camera_end), "\n\n");
-    print("Current Time: ", ftos(time), "\n");
+    print("");
+
+    println("PiP Camera State\n\n");
+    println("Camera settings:");
+    println("- index:      %3d", (float)camera_index);
+    println("- intro:      %1.1f", camera_intro);
+    println("- outro:      %1.1f", camera_outro);
+    println("- transition: %1.1f", camera_transition);
+    println("Camera schedule:");
+    println("- start: %4.2f", camera_start);
+    println("- intro: %4.2f", camera_start_transition);
+    println("- outro: %4.2f", camera_end_transition);
+    println("- end:   %4.2f", camera_end);
+    println("Current Time: %4.2f", time);
     return 1;
 };
 
 
 float() PipCmdTimers =
 {
-    print("Picture-in-Picture Timer State\n\n");
+    println("PiP Timer State\n");
     itemtimer_t *timers = PipGetTimers();
     for (int i = 0; i < MAX_POWERUPS; i++) {
         itemtimer_t *timer = &timers[i];
         if (!timer->item) {
             continue;
         }
-        print("  index: ", itos(i), "\n");
-        print(" entnum: ", ftos(timer->entnum), "\n");
-        print("   took: ", ftos(timer->took), "\n");
-        print("respawn: ", ftos(timer->respawn), "\n");
+        println("  index: %d", i);
+        println(" entnum: %d", timer->entnum);
+        println("   took: %.2f", timer->took);
+        println("respawn: %.2f", timer->respawn);
 
         vector origin = getentity(timer->entnum, GE_ORIGIN);
-        print("spawned: ", origin == '0 0 0' ? "no" : "yes", "\n");
+        println("spawned: %s", origin == '0 0 0' ? "no" : "yes");
 
-        string name = getplayerkeyvalue(timer->playernum - 1, INFOKEY_P_NAME);
-        print("     by: ", name, " (num: ", ftos(timer->playernum), ")\n");
+        if (timer->took > 0) {
+            string name = getplayerkeyvalue(timer->playernum - 1, INFOKEY_P_NAME);
+            println("     by: %s (num: %f)", name, timer->playernum);
+        }
 
         print("   type: ");
         item_t *item = timer.item;
         switch (item.type) {
         case IT_QUAD:
-            print("quad");
+            print("&c55fquad&r");
             break;
         case IT_PENT:
-            print("pent");
+            print("&cf55pent&r");
             break;
         default:
             print("none");
@@ -153,15 +157,15 @@ float() PipCmdTimers =
         }
         print("\n\n");
     }
-    print("Current time: ", ftos(time), "\n");
+    println("Current time: %f", time);
     return 1;
 };
 
 float() PipCmdHelp =
 {
-    print("Picture-in-Picture Commands\n");
-    print(" * active - Currently scheduled camera\n");
-    print(" * timers - All tracked timers\n");
+    println("Picture-in-Picture Commands");
+    println(" * active - Currently scheduled camera");
+    println(" * timers - All tracked timers");
     return 1;
 };
 
@@ -186,6 +190,7 @@ void(float apilevel, string enginename, float engineversion) CSQC_Init =
     // Toggle if cameras are enabled, the timing data will be recorded either way
     // to allow toggling it mid game
     registercvar("pip_enabled", "1");
+    registercvar("pip_debug", "0");
     registercvar("pip_camera_intro", "5.0");
     registercvar("pip_camera_outro", "3.5");
     registercvar("pip_camera_transition", "0.8");
@@ -305,9 +310,9 @@ void(float vwidth, float vheight, float notmenu) CSQC_UpdateView =
     // No-op to reset blending mode, bug in FTE
     drawfill([0, 0], [0, 0], [1, 1, 1], 1);
 
+    setviewprop(VF_VIEWENTITY, 0);
     setviewprop(VF_DRAWENGINESBAR, 0);
     setviewprop(VF_DRAWCROSSHAIR, 0);
-    setviewprop(VF_VIEWENTITY, 0);
     setviewprop(VF_ORIGIN, item->camera->origin);
     setviewprop(VF_MIN_X, x_offset + slide_offset);
     setviewprop(VF_MIN_Y, margin);

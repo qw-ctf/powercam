@@ -50,7 +50,7 @@ float(float isnew) PipPowerupSpawnListener =
         if (!timer->item) {
             timer.item = PipFindItem(self.origin, self.modelindex);
             if (timer.item) {
-                dprint("Associated timer via listener\n");
+                debug("Associated timer via listener");
             }
         }
 
@@ -103,7 +103,7 @@ void(string msg) CSQC_Parse_StuffCmd =
         if (!timer->item) {
             item_t *item = PipFindItemByEntity(entnum);
             if (!item) {
-                dprint("ITEM NOT FOUND!\n");
+                debug("ITEM NOT FOUND!");
                 return;
             }
             timer->item = item;

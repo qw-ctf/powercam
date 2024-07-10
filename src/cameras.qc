@@ -154,12 +154,12 @@ item_t*(vector origin, vector tolerance, itemtype_t expected_type) PipFindItemIn
     for (int i = 0; i < MAX_POWERUPS; i++) {
         item_t *item = &items[i];
         if (item.type == IT_NONE) {
-            print("Camera not found! ", mapname, "\n");
+            debug("Camera not found on map '%s'", mapname);
             break;
         }
 
         if (item.type != expected_type) {
-            print("Item model mismatch: ", ftos(item.type), " != ", ftos(expected_type), "\n");
+            debug("Item model mismatch: %f != %f", item.type, expected_type);
             continue;
         }
 
@@ -168,9 +168,9 @@ item_t*(vector origin, vector tolerance, itemtype_t expected_type) PipFindItemIn
             fabs(item.origin.z - origin.z) <= tolerance.z) {
             return item;
         } else {
-            dprint("x-delta: ", ftos(item.origin.x), " ", ftos(origin.x), " ", ftos(fabs(item.origin.x - origin.x)), "\n");
-            dprint("y-delta: ", ftos(item.origin.y), " ", ftos(origin.y), " ",  ftos(fabs(item.origin.y - origin.y)), "\n");
-            dprint("z-delta: ", ftos(item.origin.z), " ", ftos(origin.z), " ",  ftos(fabs(item.origin.z - origin.z)), "\n");
+            debug("x-delta: %f %f %f", item.origin.x, origin.x, fabs(item.origin.x - origin.x));
+            debug("y-delta: %f %f %f", item.origin.y, origin.y, fabs(item.origin.y - origin.y));
+            debug("z-delta: %f %f %f", item.origin.z, origin.z, fabs(item.origin.z - origin.z));
         }
     }
 
@@ -185,11 +185,11 @@ item_t*(vector origin, vector tolerance, itemtype_t expected_type) PipFindItemIn
 item_t*(vector org, float model_index) PipFindItem =
 {
     if (org == '0 0 0') {
-        print("zero origin, skipping\n");
+        debug("zero origin, skipping");
         return nil;
     }
     if (model_index == 0) {
-        print("zero type, skipping\n");
+        debug("zero type, skipping");
         return nil;
     }
     itemtype_t type = PipItemTypeByModelIndex(model_index);
