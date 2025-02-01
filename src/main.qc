@@ -284,33 +284,34 @@ float(float isnew) PipNewPlayer =
 
 void() CSQC_WorldLoaded =
 {
-    if (!PipLoadItems()) {
-        return;
+    if (cvar("pip_xray")) {
+        team_shader = sprintf(R"({
+          {
+            map $whiteimage
+            rgbgen const %s
+          }
+        })", cvar_string("pip_xray_color_team"));
+
+        enemy_shader = sprintf(R"({
+          {
+            map $whiteimage
+            rgbgen const %s
+          }
+        })", cvar_string("pip_xray_color_enemy"));
+
+        deltalisten("progs/player.mdl", PipNewPlayer, RSES_NOLERP | RSES_NOROTATE);
     }
 
-    camera_index = -1;
-    camera_start = CAMERA_START_RESET;
-    camera_start_transition = CAMERA_START_RESET;
-    camera_end = CAMERA_END_RESET;
-    camera_end_transition = CAMERA_END_RESET;
+    if (PipLoadItems()) {
+        camera_index = -1;
+        camera_start = CAMERA_START_RESET;
+        camera_start_transition = CAMERA_START_RESET;
+        camera_end = CAMERA_END_RESET;
+        camera_end_transition = CAMERA_END_RESET;
 
-    team_shader = sprintf(R"({
-      {
-        map $whiteimage
-        rgbgen const %s
-      }
-    })", cvar_string("pip_xray_color_team"));
-
-    enemy_shader = sprintf(R"({
-      {
-        map $whiteimage
-        rgbgen const %s
-      }
-    })", cvar_string("pip_xray_color_enemy"));
-
-    deltalisten("progs/player.mdl", PipNewPlayer, RSES_NOLERP | RSES_NOROTATE);
-    deltalisten("progs/quaddama.mdl", PipPowerupSpawnListener, RSES_NOLERP);
-    deltalisten("progs/invulner.mdl", PipPowerupSpawnListener, RSES_NOLERP);
+        deltalisten("progs/quaddama.mdl", PipPowerupSpawnListener, RSES_NOLERP);
+        deltalisten("progs/invulner.mdl", PipPowerupSpawnListener, RSES_NOLERP);
+    }
 };
 
 void() CSQC_ServerInfoChanged =
