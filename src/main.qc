@@ -216,6 +216,7 @@ void(float apilevel, string enginename, float engineversion) CSQC_Init =
     registercvar("pip_bg_quad_color", "0.2 0.2 0.5");
     registercvar("pip_bg_pent_color", "0.5 0.2 0.2");
     registercvar("pip_xray", "1");
+    registercvar("pip_xray_alpha", "0.3");
     registercvar("pip_xray_distance", "512");
     registercvar("pip_xray_color_team", "0 1 0");
     registercvar("pip_xray_color_enemy", "1 0 0");
@@ -265,7 +266,7 @@ float(float isnew) PipNewPlayer =
 
     self.effects |= EF_NODEPTHTEST | EF_ADDITIVE;
     self.drawmask = MASK_XRAY;
-    self.alpha = 0.3 * distanceFactor;
+    self.alpha = cvar("pip_xray_alpha") * distanceFactor;
     self.fatness = 2;
 
     string pov_team = getplayerkeyvalue(player_localentnum-1, "team");
