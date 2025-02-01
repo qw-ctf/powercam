@@ -10,6 +10,9 @@ the `//ktx took` messages this project contains a database of common maps
 keyed on origin. This origin is matched with some Z-tolerance as the items
 are dropped to the ground on the map by the mod.
 
+As nothing tastes sweeter than feature creep, it also adds xray support
+for drawing solid colored players behind wall, colored by team vs POV.
+
 Contributing cameras
 --------------------
 The cameras are declared in `src/cameras.qc` via an eDSL to make it a bit
@@ -64,6 +67,10 @@ Configurations:
 * `pip_camera_transition` - Seconds of camera transition, both in and out.
 * `pip_bg_quad_color` - Background color if quad camera.
 * `pip_bg_pent_color` - Background color if pent camera.
+* `pip_xray` - `0` or `1` to toggle xray.
+* `pip_xray_distance` - how far through walls to see until faded out.
+* `pip_xray_color_team` - `r g b` team color.
+* `pip_xray_color_enemy` - `r g b` enemy color.
 
 Commands:
 * `pip` - Show available commands.

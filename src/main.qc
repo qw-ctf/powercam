@@ -14,6 +14,13 @@
  * OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
+#define RSES_NOLERP 1
+#define RSES_NOROTATE 2
+#define RSES_NOTRAILS 4
+#define RSES_NOLIGHTS 8
+
+#define MASK_XRAY (1<<3)
+
 var float match_start_time = 0;
 var int camera_index = -1;
 var float camera_intro = 4.0;
@@ -31,6 +38,17 @@ var float camera_end_transition = CAMERA_END_RESET;
 
 var vector camera_bg_color = '1 1 1';
 var string camera_item_name = "none";
+
+var string team_shader = "";
+var string enemy_shader = "";
+
+float(float x) easeInExpo =
+{
+    if (x == 0.0) {
+        return 0.0;
+    }
+    return pow(2.0, 10.0 * x - 10.0);
+};
 
 void() ResetCamera =
 {
@@ -196,8 +214,63 @@ void(float apilevel, string enginename, float engineversion) CSQC_Init =
     registercvar("pip_camera_transition", "0.8");
     registercvar("pip_bg_quad_color", "0.2 0.2 0.5");
     registercvar("pip_bg_pent_color", "0.5 0.2 0.2");
+    registercvar("pip_xray", "1");
+    registercvar("pip_xray_distance", "512");
+    registercvar("pip_xray_color_team", "0 1 0");
+    registercvar("pip_xray_color_enemy", "1 0 0");
     registercommand("pip");
 };
+
+float(float isnew) PipNewPlayer =
+{
+    if (isnew || !cvar("pip_xray")) {
+        self.drawmask = 0;
+        return isnew;
+    }
+
+    float pnum = self.entnum-1;
+    float health = getplayerstat(pnum, STAT_HEALTH, EV_FLOAT);
+
+    if (health <= 0) {
+        self.drawmask = 0;
+        return isnew;
+    }
+
+    vector org = getviewprop(VF_ORIGIN);
+    float cutoff = cvar("pip_xray_distance");
+
+    float distance = vlen(org - self.origin);
+    if (distance > cutoff) {
+        self.drawmask = 0;
+        return isnew;
+    }
+
+    traceline(org, self.origin, MOVE_NORMAL | MOVE_NOMONSTERS, self);
+    if (trace_fraction == 1) {
+        self.drawmask = 0;
+        return isnew;
+    }
+
+    float distanceFactor = 1 - easeInExpo(distance / cutoff);
+
+    self.effects |= EF_NODEPTHTEST | EF_ADDITIVE;
+    self.drawmask = MASK_XRAY;
+    self.alpha = 0.3 * distanceFactor;
+    self.fatness = 2;
+
+    string pov_team = getplayerkeyvalue(player_localentnum-1, "team");
+    string ent_team = getplayerkeyvalue(pnum, "team");
+
+    if (pov_team != ent_team) {
+        self.forceshader = shaderforname("xrayenemy", enemy_shader);
+    } else {
+        self.forceshader = shaderforname("xrayteam", team_shader);
+    }
+
+    return isnew;
+};
+
+
 
 void() CSQC_WorldLoaded =
 {
@@ -211,8 +284,23 @@ void() CSQC_WorldLoaded =
     camera_end = CAMERA_END_RESET;
     camera_end_transition = CAMERA_END_RESET;
 
-    deltalisten("progs/quaddama.mdl", PipPowerupSpawnListener, 1);
-    deltalisten("progs/invulner.mdl", PipPowerupSpawnListener, 1);
+    team_shader = sprintf(R"({
+      {
+        map $whiteimage
+        rgbgen const %s
+      }
+    })", cvar_string("pip_xray_color_team"));
+
+    enemy_shader = sprintf(R"({
+      {
+        map $whiteimage
+        rgbgen const %s
+      }
+    })", cvar_string("pip_xray_color_enemy"));
+
+    deltalisten("progs/player.mdl", PipNewPlayer, RSES_NOLERP | RSES_NOROTATE);
+    deltalisten("progs/quaddama.mdl", PipPowerupSpawnListener, RSES_NOLERP);
+    deltalisten("progs/invulner.mdl", PipPowerupSpawnListener, RSES_NOLERP);
 };
 
 void() CSQC_ServerInfoChanged =
@@ -233,20 +321,18 @@ void() CSQC_ServerInfoChanged =
     SelectNextCamera();
 };
 
-float(float x) easeInExpo =
-{
-    if (x == 0.0) {
-        return 0.0;
-    }
-    return pow(2.0, 10.0 * x - 10.0);
-};
-
 void(float vwidth, float vheight, float notmenu) CSQC_UpdateView =
 {
     clearscene();
+    setviewprop(VF_VIEWENTITY, 0);
     addentities(MASK_ENGINE | MASK_VIEWMODEL);
     setviewprop(VF_DRAWENGINESBAR, 1);
     setviewprop(VF_DRAWCROSSHAIR, 1);
+    renderscene();
+    clearscene();
+
+    addentities(MASK_XRAY);
+    setviewprop(VF_DRAWWORLD, 0);
     renderscene();
 
     if (time < camera_start) {
@@ -310,6 +396,8 @@ void(float vwidth, float vheight, float notmenu) CSQC_UpdateView =
     // No-op to reset blending mode, bug in FTE
     drawfill([0, 0], [0, 0], [1, 1, 1], 1);
 
+    clearscene();
+    setviewprop(VF_DRAWWORLD, 1);
     setviewprop(VF_VIEWENTITY, 0);
     setviewprop(VF_DRAWENGINESBAR, 0);
     setviewprop(VF_DRAWCROSSHAIR, 0);
@@ -320,6 +408,7 @@ void(float vwidth, float vheight, float notmenu) CSQC_UpdateView =
     setviewprop(VF_SIZE_Y, height);
     setviewprop(VF_ANGLES, item->camera->angles);
     setviewprop(VF_FOV, '110 0 0');
+    addentities(MASK_ENGINE | MASK_VIEWMODEL);
 
     cvar_set("scr_autoid_armor", "0");
     cvar_set("scr_autoid_health", "0");
