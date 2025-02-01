@@ -408,7 +408,7 @@ void(float vwidth, float vheight, float notmenu) CSQC_UpdateView =
     setviewprop(VF_SIZE_Y, height);
     setviewprop(VF_ANGLES, item->camera->angles);
     setviewprop(VF_FOV, '110 0 0');
-    addentities(MASK_ENGINE | MASK_VIEWMODEL);
+    addentities(MASK_ENGINE);
 
     cvar_set("scr_autoid_armor", "0");
     cvar_set("scr_autoid_health", "0");
