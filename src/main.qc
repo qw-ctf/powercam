@@ -223,7 +223,7 @@ void(float apilevel, string enginename, float engineversion) CSQC_Init =
 
 float(float isnew) PipNewPlayer =
 {
-    if (isnew || !cvar("pip_xray")) {
+    if (!cvar("pip_xray")) {
         self.drawmask = 0;
         return isnew;
     }
