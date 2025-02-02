@@ -43,6 +43,20 @@ var string camera_item_name = "none";
 var string team_shader = "";
 var string enemy_shader = "";
 
+var float autocvar_pip_debug = 0;
+var float autocvar_pip_enabled = 1;
+var float autocvar_pip_camera_intro = 5.0;
+var float autocvar_pip_camera_outro = 3.5;
+var float autocvar_pip_camera_transition = 0.8;
+var vector autocvar_pip_bg_quad_color = '0.2 0.2 0.5';
+var vector autocvar_pip_bg_pent_color = '0.5 0.2 0.2';
+
+var float autocvar_pip_xray = 1;
+var float autocvar_pip_xray_alpha = 0.3;
+var float autocvar_pip_xray_distance = 512;
+var vector autocvar_pip_xray_color_team = '0 1 0';
+var vector autocvar_pip_xray_color_enemy = '1 0 0';
+
 float(float x) easeInExpo =
 {
     if (x == 0.0) {
@@ -92,9 +106,9 @@ void() SelectNextCamera =
     }
     if (candidate_index != -1) {
         // Reload any cvar changes
-        camera_intro = cvar("pip_camera_intro");
-        camera_outro = cvar("pip_camera_outro");
-        camera_transition = cvar("pip_camera_transition");
+        camera_intro = autocvar_pip_camera_intro;
+        camera_outro = autocvar_pip_camera_outro;
+        camera_transition = autocvar_pip_camera_transition;
 
         camera_index = candidate_index;
         camera_start = max(match_start_time, candidate_respawn - camera_intro);
@@ -104,11 +118,11 @@ void() SelectNextCamera =
 
         switch (candidate_type) {
         case IT_QUAD:
-            camera_bg_color = stov(cvar_string("pip_bg_quad_color"));
+            camera_bg_color = autocvar_pip_bg_quad_color;
             camera_item_name = "Quad";
             break;
         case IT_PENT:
-            camera_bg_color = stov(cvar_string("pip_bg_pent_color"));
+            camera_bg_color = autocvar_pip_bg_pent_color;
             camera_item_name = "Pent";
             break;
         default:
@@ -206,20 +220,6 @@ float(string cmd) CSQC_ConsoleCommand =
 
 void(float apilevel, string enginename, float engineversion) CSQC_Init =
 {
-    // Toggle if cameras are enabled, the timing data will be recorded either way
-    // to allow toggling it mid game
-    registercvar("pip_enabled", "1");
-    registercvar("pip_debug", "0");
-    registercvar("pip_camera_intro", "5.0");
-    registercvar("pip_camera_outro", "3.5");
-    registercvar("pip_camera_transition", "0.8");
-    registercvar("pip_bg_quad_color", "0.2 0.2 0.5");
-    registercvar("pip_bg_pent_color", "0.5 0.2 0.2");
-    registercvar("pip_xray", "1");
-    registercvar("pip_xray_alpha", "0.3");
-    registercvar("pip_xray_distance", "512");
-    registercvar("pip_xray_color_team", "0 1 0");
-    registercvar("pip_xray_color_enemy", "1 0 0");
     registercommand("pip");
 };
 
@@ -235,7 +235,7 @@ void(entity ent) PipResetPlayer =
 float(float isnew) PipNewPlayer =
 {
 
-    if (self.entnum == player_localentnum || !cvar("pip_xray")) {
+    if (self.entnum == player_localentnum || !autocvar_pip_xray) {
         PipResetPlayer(self);
         return isnew;
     }
@@ -248,7 +248,7 @@ float(float isnew) PipNewPlayer =
     }
 
     vector org = getviewprop(VF_ORIGIN);
-    float cutoff = cvar("pip_xray_distance");
+    float cutoff = autocvar_pip_xray_distance;
 
     float distance = vlen(org - self.origin);
     if (distance > cutoff) {
@@ -266,16 +266,16 @@ float(float isnew) PipNewPlayer =
 
     self.effects |= EF_NODEPTHTEST | EF_ADDITIVE;
     self.drawmask = MASK_XRAY;
-    self.alpha = cvar("pip_xray_alpha") * distanceFactor;
+    self.alpha = autocvar_pip_xray_alpha * distanceFactor;
     self.fatness = 2;
 
     string pov_team = getplayerkeyvalue(player_localentnum-1, "team");
     string ent_team = getplayerkeyvalue(pnum, "team");
 
     if (pov_team != ent_team) {
-        self.forceshader = shaderforname("xrayenemy", enemy_shader);
+        self.forceshader = shaderforname("xray-enemy", enemy_shader);
     } else {
-        self.forceshader = shaderforname("xrayteam", team_shader);
+        self.forceshader = shaderforname("xray-team", team_shader);
     }
 
     return isnew;
@@ -285,20 +285,20 @@ float(float isnew) PipNewPlayer =
 
 void() CSQC_WorldLoaded =
 {
-    if (cvar("pip_xray")) {
+    if (autocvar_pip_xray) {
         team_shader = sprintf(R"({
           {
             map $whiteimage
-            rgbgen const %s
+            rgbgen const %v
           }
-        })", cvar_string("pip_xray_color_team"));
+        })", autocvar_pip_xray_color_team);
 
         enemy_shader = sprintf(R"({
           {
             map $whiteimage
-            rgbgen const %s
+            rgbgen const %v
           }
-        })", cvar_string("pip_xray_color_enemy"));
+        })", autocvar_pip_xray_color_enemy);
 
         deltalisten("progs/player.mdl", PipNewPlayer, RSES_NOLERP | RSES_NOROTATE);
     }
@@ -352,7 +352,7 @@ void(float vwidth, float vheight, float notmenu) CSQC_UpdateView =
         return;
     }
 
-    if (!cvar("pip_enabled")) {
+    if (!autocvar_pip_enabled) {
         return;
     }
 
