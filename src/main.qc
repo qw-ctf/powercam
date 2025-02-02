@@ -235,7 +235,7 @@ void(entity ent) PipResetPlayer =
 float(float isnew) PipNewPlayer =
 {
 
-    if (!cvar("pip_xray")) {
+    if (self.entnum == player_localentnum || !cvar("pip_xray")) {
         PipResetPlayer(self);
         return isnew;
     }
