@@ -1,13 +1,14 @@
 ../csaddon.dat
 
-// TODO: Dump with /pr_dumpplatform -o csqc -Tcs to skip need for define
 #define CSQC
 #pragma target fte
 
 #define debug(fmt, ...) do { if (cvar("pip_debug")) { print(sprintf(sprintf("&c47fdebug:&r %s\n", fmt), ##__VA_ARGS__)); } } while (0)
 #define println(fmt,...) do { print(sprintf(sprintf("%s\n", fmt), ##__VA_ARGS__)); } while (0)
 
+// Dump with /pr_dumpplatform -o csplat -Tcs
 csplat.qc
+
 itemtype.qc
 cameras.qc
 itemtimer.qc
