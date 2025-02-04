@@ -283,8 +283,6 @@ float(float isnew) PipNewPlayer =
     return isnew;
 };
 
-
-
 void() CSQC_WorldLoaded =
 {
     if (autocvar_pip_xray) {
@@ -305,13 +303,13 @@ void() CSQC_WorldLoaded =
         deltalisten("progs/player.mdl", PipNewPlayer, 0);
     }
 
-    if (PipLoadItems()) {
-        camera_index = -1;
-        camera_start = CAMERA_START_RESET;
-        camera_start_transition = CAMERA_START_RESET;
-        camera_end = CAMERA_END_RESET;
-        camera_end_transition = CAMERA_END_RESET;
+    camera_index = -1;
+    camera_start = CAMERA_START_RESET;
+    camera_start_transition = CAMERA_START_RESET;
+    camera_end = CAMERA_END_RESET;
+    camera_end_transition = CAMERA_END_RESET;
 
+    if (PipLoadItems()) {
         deltalisten("progs/quaddama.mdl", PipPowerupSpawnListener, RSES_NOLERP);
         deltalisten("progs/invulner.mdl", PipPowerupSpawnListener, RSES_NOLERP);
     }
