@@ -65,6 +65,12 @@ void(float timestamp) PipResetTimers =
     for (int i = 0; i < MAX_POWERUPS; i++) {
         itemtimer_t *timer = &timers[i];
         timer->respawn = timestamp;
+        timer->entnum = 0;
+        timer->playernum = 0;
+        timer->took = 0;
+        timer->respawn = 0;
+        timer->item = nil;
+
     }
 }
 

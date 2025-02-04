@@ -303,11 +303,14 @@ void() CSQC_WorldLoaded =
         deltalisten("progs/player.mdl", PipNewPlayer, 0);
     }
 
+    match_start_time = 0;
     camera_index = -1;
     camera_start = CAMERA_START_RESET;
     camera_start_transition = CAMERA_START_RESET;
     camera_end = CAMERA_END_RESET;
     camera_end_transition = CAMERA_END_RESET;
+
+    PipResetTimers(0);
 
     if (PipLoadItems()) {
         deltalisten("progs/quaddama.mdl", PipPowerupSpawnListener, RSES_NOLERP);
@@ -326,7 +329,14 @@ void() CSQC_ServerInfoChanged =
         return;
     }
 
-    match_start_time = time;
+    println(status);
+    float argc = tokenize(status);
+    if (argc == 3 && argv(1) == "mins" && argv(2) == "left") {
+        float minutes = stof(argv(0));
+        match_start_time = time - minutes * 60;
+    } else {
+        match_start_time = time;
+    }
 
     PipResetTimers(match_start_time);
 
