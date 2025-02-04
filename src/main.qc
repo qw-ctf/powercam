@@ -263,7 +263,7 @@ float(float isnew) PipNewPlayer =
     float distanceFactor = 1 - easeInExpo(distance / cutoff);
 
     self.effects |= EF_NODEPTHTEST | EF_ADDITIVE;
-    self.drawmask = MASK_XRAY;
+    self.drawmask = (self.drawmask & ~MASK_ENGINE) | MASK_XRAY;
     self.alpha = autocvar_pip_xray_alpha * distanceFactor;
     self.fatness = 2;
 
