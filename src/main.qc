@@ -14,7 +14,7 @@
  * OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
-#define RSES_NOLERP 1
+#define RSES_NOLERP   1
 #define RSES_NOROTATE 2
 #define RSES_NOTRAILS 4
 #define RSES_NOLIGHTS 8
@@ -267,6 +267,10 @@ float(float isnew) PipNewPlayer =
     self.alpha = autocvar_pip_xray_alpha * distanceFactor;
     self.fatness = 2;
 
+    // Workaround for self.origin not being lerped, bug in FTE, remove once fixed.
+    vector origin = getentity(self.entnum, GE_ORIGIN);
+    setorigin(self, origin);
+
     string pov_team = getplayerkeyvalue(player_localentnum-1, "team");
     string ent_team = getplayerkeyvalue(pnum, "team");
 
@@ -298,7 +302,7 @@ void() CSQC_WorldLoaded =
           }
         })", autocvar_pip_xray_color_enemy);
 
-        deltalisten("progs/player.mdl", PipNewPlayer, RSES_NOLERP | RSES_NOROTATE);
+        deltalisten("progs/player.mdl", PipNewPlayer, 0);
     }
 
     if (PipLoadItems()) {
