@@ -420,7 +420,7 @@ void(float vwidth, float vheight, float notmenu) CSQC_UpdateView =
 
     clearscene();
     setviewprop(VF_DRAWWORLD, 1);
-    setviewprop(VF_VIEWENTITY, 0);
+    setviewprop(VF_VIEWENTITY, 1);
     setviewprop(VF_DRAWENGINESBAR, 0);
     setviewprop(VF_DRAWCROSSHAIR, 0);
     setviewprop(VF_ORIGIN, item->camera->origin);
