@@ -283,28 +283,6 @@ float(float isnew) PipNewPlayer =
     return isnew;
 };
 
-void() PipRefreshMatchTime =
-{
-    string status = serverkey("status");
-    if (!strcasecmp(status, "standby") || !strcasecmp(status, "countdown")) {
-        return;
-    }
-
-    println(status);
-
-    float argc = tokenize(status);
-    if (argc == 3 && argv(1) == "mins" && argv(2) == "left") {
-        float minutes = stof(argv(0));
-        match_start_time = time - minutes * 60;
-    } else {
-        match_start_time = time;
-    }
-
-    PipResetTimers(match_start_time);
-
-    SelectNextCamera();
-};
-
 void() CSQC_WorldLoaded =
 {
     if (autocvar_pip_xray) {
@@ -337,18 +315,32 @@ void() CSQC_WorldLoaded =
     if (PipLoadItems()) {
         deltalisten("progs/quaddama.mdl", PipPowerupSpawnListener, RSES_NOLERP);
         deltalisten("progs/invulner.mdl", PipPowerupSpawnListener, RSES_NOLERP);
-
-        PipRefreshMatchTime();
     }
 };
 
 void() CSQC_ServerInfoChanged =
 {
-    if (!PipGetCurrentItems() || match_start_time) {
+    string status = serverkey("status");
+
+    if (!strcasecmp(status, "standby") || !strcasecmp(status, "countdown")) {
+        PipResetTimers(match_start_time);
+        SelectNextCamera();
         return;
     }
 
-    PipRefreshMatchTime();
+    if (match_start_time > 0.0f) {
+        return;
+    }
+
+    match_start_time = time;
+
+    float argc = tokenize(status);
+    if (argc == 3 && argv(1) == "min" && argv(2) == "left") {
+        println("[%.0f] minutes remaining", stof(argv(0)));
+    }
+
+    PipResetTimers(match_start_time);
+    SelectNextCamera();
 };
 
 void(float vwidth, float vheight, float notmenu) CSQC_UpdateView =
