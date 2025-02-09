@@ -379,6 +379,10 @@ void(float vwidth, float vheight, float notmenu) CSQC_UpdateView =
     float slide_offset = 0;
 
     itemtimer_t *timer = PipGetTimer(camera_index);
+    if (!timer) {
+        return;
+    }
+
     item_t *item = timer->item;
 
     if (camera_end == CAMERA_END_RESET && timer->took > camera_start) {
