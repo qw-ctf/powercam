@@ -321,15 +321,12 @@ void() CSQC_WorldLoaded =
 
 void() CSQC_ServerInfoChanged =
 {
-    string status = serverkey("status");
-
-    if (!strcasecmp(status, "standby") || !strcasecmp(status, "countdown")) {
-        PipResetTimers(match_start_time);
-        SelectNextCamera();
+    if (match_start_time > 0.0f) {
         return;
     }
 
-    if (match_start_time > 0.0f) {
+    string status = serverkey("status");
+    if (!strcasecmp(status, "standby") || !strcasecmp(status, "countdown")) {
         return;
     }
 
