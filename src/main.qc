@@ -19,7 +19,8 @@
 #define RSES_NOTRAILS 4
 #define RSES_NOLIGHTS 8
 
-#define MASK_XRAY (1<<3)
+#define MASK_XRAY  (1<<3)
+#define MASK_LOCAL (1<<4)
 
 var float match_start_time = 0;
 var int camera_index = -1;
@@ -224,7 +225,11 @@ void(float apilevel, string enginename, float engineversion) CSQC_Init =
 
 void(entity ent) PipResetPlayer =
 {
-    ent.drawmask = 0;
+    if (ent.entnum == player_localentnum) {
+        ent.drawmask = MASK_LOCAL;
+    } else {
+        ent.drawmask = 0;
+    }
     ent.effects = 0;
     ent.alpha = 0;
     ent.fatness = 0;
@@ -434,7 +439,7 @@ void(float vwidth, float vheight, float notmenu) CSQC_UpdateView =
     setviewprop(VF_SIZE_Y, height);
     setviewprop(VF_ANGLES, item->camera->angles);
     setviewprop(VF_FOV, '110 0 0');
-    addentities(MASK_ENGINE);
+    addentities(MASK_ENGINE | MASK_LOCAL);
 
     cvar_set("scr_autoid_armor", "0");
     cvar_set("scr_autoid_health", "0");
