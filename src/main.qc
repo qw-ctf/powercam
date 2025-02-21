@@ -22,7 +22,7 @@
 #define MASK_XRAY  (1<<3)
 #define MASK_LOCAL (1<<4)
 
-var float match_start_time = 0;
+var float match_start_time = -1;
 var int camera_index = -1;
 var float camera_intro = 4.0;
 var float camera_outro = 2.5;
@@ -76,7 +76,7 @@ void() ResetCamera =
 
 void() SelectNextCamera =
 {
-    if (!match_start_time) {
+    if (match_start_time == -1) {
         return;
     }
 
@@ -308,10 +308,10 @@ void() CSQC_WorldLoaded =
         deltalisten("progs/player.mdl", PipNewPlayer, 0);
     }
 
-    match_start_time = 0;
+    match_start_time = -1;
 
     ResetCamera();
-    PipResetTimers(0);
+    PipResetTimers(match_start_time);
 
     if (PipLoadItems()) {
         deltalisten("progs/quaddama.mdl", PipPowerupSpawnListener, RSES_NOLERP);
@@ -321,7 +321,7 @@ void() CSQC_WorldLoaded =
 
 void() CSQC_ServerInfoChanged =
 {
-    if (match_start_time > 0.0f) {
+    if (match_start_time >= 0.0f) {
         return;
     }
 
