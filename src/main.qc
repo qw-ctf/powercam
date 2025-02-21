@@ -194,11 +194,37 @@ float() PipCmdTimers =
     return 1;
 };
 
+
+float() PipCmdReCheck =
+{
+    if (camera_index == -1) {
+        return 1;
+    }
+
+    if (time < camera_start) {
+        debug("camera start not yet reached");
+        return 1;
+    }
+
+    itemtimer_t *timer = &timers[camera_index];
+    if (PipFindItemByEntity(timer->entnum) != nil) {
+        debug("recheck found item");
+        return 1;
+    }
+
+    ResetCamera();
+    SelectNextCamera();
+
+    return 1;
+}
+
+
 float() PipCmdHelp =
 {
     println("Picture-in-Picture Commands");
-    println(" * active - Currently scheduled camera");
-    println(" * timers - All tracked timers");
+    println(" * active  - Currently scheduled camera");
+    println(" * timers  - All tracked timers");
+    println(" * recheck - Reset camera and try to schedule next");
     return 1;
 };
 
@@ -213,6 +239,8 @@ float(string cmd) CSQC_ConsoleCommand =
         return PipCmdActive();
     case "timers":
         return PipCmdTimers();
+    case "recheck":
+        return PipCmdReCheck();
     default:
         return PipCmdHelp();
     }
