@@ -360,11 +360,6 @@ void() CSQC_ServerInfoChanged =
 
     match_start_time = time;
 
-    float argc = tokenize(status);
-    if (argc == 3 && argv(1) == "min" && argv(2) == "left") {
-        println("[%.0f] minutes remaining", stof(argv(0)));
-    }
-
     PipResetTimers(match_start_time);
     SelectNextCamera();
 };
